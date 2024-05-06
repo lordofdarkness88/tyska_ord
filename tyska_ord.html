@@ -3,88 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Code</title>
-    <style>
-        pre {
-            background-color: #f4f4f4;
-            padding: 20px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-    </style>
+    <title>Python Code Example</title>
 </head>
 <body>
+    <pre>
+        <code>
+            import os
+            import pandas as pd
 
-<h1>Python Code Example</h1>
+            # Load data
+            file_path = r'C:\Users\vikto\OneDrive\Skrivbord\Python\1000germanwords3.csv'
+            df = pd.read_csv(file_path, delimiter=';')
 
-<pre><code>
-import os
-import pandas as pd
+            # Function to ask if the user wants to continue
+            def ask_to_continue():
+                while True:
+                    response = input("Vill du fortsätta där du slutade senast? (Skriv 'j/n'): ").lower()
+                    if response in ["j", "n"]:
+                        return response == "j"
+                    else:
+                        print("Vänligen svara med 'j' eller 'n'.")
 
+            # Function to quiz the user on translations
+            def quiz_translations(dataframe, start_index=0):
+                for index, row in dataframe.iloc[start_index:].iterrows():
+                    german_word = row['German']
+                    correct_swedish = row['in Swedish']
 
-# Load data
-file_path = r'C:\Users\vikto\OneDrive\Skrivbord\Python\1000germanwords3.csv'
-df = pd.read_csv(file_path, delimiter=';')
+                    while True:
+                        user_input = input(
+                            f"Vad är den svenska översättningen av '{german_word}'? (Skriv '1' för att hoppa över): ")
 
+                        if user_input == "1":
+                            print(f"Hoppade över. Rätt översättning var '{correct_swedish}'.")
+                            break
 
-# Function to ask if the user wants to continue
-def ask_to_continue():
-    while True:
-        response = input("Vill du fortsätta där du slutade senast? (Skriv 'j/n'): ").lower()
-        if response in ["j", "n"]:
-            return response == "j"
-        else:
-            print("Vänligen svara med 'j' eller 'n'.")
+                        if user_input.strip().lower() == correct_swedish.lower():
+                            print(f"Rätt på ord nr {index}. Vidare till nästa ord!")
+                            # Update last index
+                            with open(last_index_file_path, "w") as file:
+                                file.write(str(index))  # Update to the current index
+                            break
+                        else:
+                            print(f"Fel. Försök igen.")
 
-
-# Function to quiz the user on translations
-def quiz_translations(dataframe, start_index=0):
-    for index, row in dataframe.iloc[start_index:].iterrows():
-        german_word = row['German']
-        correct_swedish = row['in Swedish']
-
-        while True:
-            user_input = input(
-                f"Vad är den svenska översättningen av '{german_word}'? (Skriv '1' för att hoppa över): ")
-
-            if user_input == "1":
-                print(f"Hoppade över. Rätt översättning var '{correct_swedish}'.")
-                break
-
-            if user_input.strip().lower() == correct_swedish.lower():
-                print(f"Rätt på ord nr {index}. Vidare till nästa ord!")
-                # Update last index
-                with open(last_index_file_path, "w") as file:
-                    file.write(str(index))  # Update to the current index
-                break
+            # Load last index
+            last_index_file_path = r"C:\Users\vikto\OneDrive\Skrivbord\Python\last_index.txt"
+            if os.path.exists(last_index_file_path):
+                try:
+                    with open(last_index_file_path, "r") as file:
+                        last_index_content = file.read().strip()
+                        last_index = int(last_index_content) if last_index_content else 0
+                except ValueError:
+                    last_index = 0
             else:
-                print(f"Fel. Försök igen.")
+                last_index = 0
 
+            # Ask if the user wants to continue
+            if ask_to_continue():
+                quiz_translations(df, start_index=last_index)
+            else:
+                quiz_translations(df)
 
-# Load last index
-last_index_file_path = r"C:\Users\vikto\OneDrive\Skrivbord\Python\last_index.txt"
-if os.path.exists(last_index_file_path):
-    try:
-        with open(last_index_file_path, "r") as file:
-            last_index_content = file.read().strip()
-            last_index = int(last_index_content) if last_index_content else 0
-    except ValueError:
-        last_index = 0
-else:
-    last_index = 0
-
-
-# Ask if the user wants to continue
-if ask_to_continue():
-    quiz_translations(df, start_index=last_index)
-else:
-    quiz_translations(df)
-
-
-# Save last index
-with open(last_index_file_path, "w") as file:
-    file.write(str(last_index))  # Save the last index
-</code></pre>
-
+            # Save last index
+            with open(last_index_file_path, "w") as file:
+                file.write(str(last_index))  # Save the last index
+        </code>
+    </pre>
 </body>
 </html>
